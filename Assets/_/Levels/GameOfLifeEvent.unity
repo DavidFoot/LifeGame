@@ -303,9 +303,12 @@ MonoBehaviour:
   OnNewGeneration:
     m_PersistentCalls:
       m_Calls: []
-  _gridDimensions: {x: 50, y: 50}
+  OnDisplayGeneration:
+    m_PersistentCalls:
+      m_Calls: []
+  _gridDimensions: {x: 150, y: 150}
   _cellPrefab: {fileID: 2475599819013983987, guid: 39675ad98ca32ca4883dd7ec3a5dac79, type: 3}
-  _probabilityOfLifeAtInit: 0.13
+  _probabilityOfLifeAtInit: 0.093
 --- !u!1 &585015398
 GameObject:
   m_ObjectHideFlags: 0
