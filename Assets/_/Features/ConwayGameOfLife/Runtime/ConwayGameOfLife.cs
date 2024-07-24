@@ -136,6 +136,7 @@ namespace ConwayGameOfLife.Runtime
 
         public void ToggleAutoMode() => _toggleAutoMode = !_toggleAutoMode;
 
+        public void QuitApplication() => Application.Quit();
 
         #endregion
 

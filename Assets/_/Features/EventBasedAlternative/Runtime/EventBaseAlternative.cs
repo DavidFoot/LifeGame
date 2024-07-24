@@ -10,8 +10,10 @@ namespace EventBAsedAlternative.Runtime
     {
 
         public UnityEvent OnNewGeneration;
+        public UnityEvent OnDisplayGeneration;
         private void Awake()
         {
+            gridCellCount = _gridDimensions.x * _gridDimensions.y;
             GenerateGRidCell2D();
         }
         private void Update()
@@ -25,7 +27,6 @@ namespace EventBAsedAlternative.Runtime
         }
         private void GenerateGRidCell2D()
         {
-            int gridCellCount = _gridDimensions.x * _gridDimensions.y;
             for (int i = 0; i < _gridDimensions.x; i++)
             {
                 for (int j = 0; j < _gridDimensions.y; j++)
@@ -33,19 +34,27 @@ namespace EventBAsedAlternative.Runtime
                     var cellObject = Instantiate(_cellPrefab, new Vector2(i, j), Quaternion.identity, transform);
                     cellObject.name = $"Cell({i},{j})";
                     OnNewGeneration.AddListener(cellObject.GetComponent<CellBehaviour>().OnNewGeneration);
-                    //cellObject.GetComponent<CellBehaviour>().m_eventBaseAlternative = this;
+                    OnNewGeneration.AddListener(cellObject.GetComponent<CellBehaviour>().OnDisplayGeneration);
+                    cellObject.GetComponent<CellBehaviour>().OnCompleteStateChange.AddListener(OnCompleteStateChange);
                     if (UnityEngine.Random.value < _probabilityOfLifeAtInit) cellObject.GetComponent<CellBehaviour>().SetCellState(true);
                     else cellObject.GetComponent<CellBehaviour>().SetCellState(false);
                 }
             }
         }
-        private Vector3 GetCellPosition(int i)
+        public void OnCompleteStateChange()
         {
-            int x = i % _gridDimensions.x;
-            int y = i / _gridDimensions.x;
-            return new Vector3(x, y, 0);
+            completeChangeState++;
+            if (completeChangeState >= gridCellCount)
+            {
+                OnDisplayGeneration.Invoke();
+                completeChangeState = 0;
+            }
         }
 
+
+
+        int gridCellCount;
+        int completeChangeState = 0;
         #region Privates & Protected
 
         [SerializeField] Vector2Int _gridDimensions;

@@ -1,34 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace EventBAsedAlternative.Runtime
 {
     public class CellBehaviour : MonoBehaviour
     {
-        //public EventBaseAlternative m_eventBaseAlternative;
-        //void OnEnable()
-        //{
-        //    if (m_eventBaseAlternative != null)
-        //    {
-        //        Debug.Log("Register to Event");
-        //        m_eventBaseAlternative.OnNewGeneration += OnNewGeneration;
-        //    }
-        //}
-
-        //void OnDisable()
-        //{
-        //    if (m_eventBaseAlternative != null)
-        //    {
-        //        m_eventBaseAlternative.OnNewGeneration -= OnNewGeneration;
-        //    }
-        //}
-
+        bool _nextState;
+        public UnityEvent OnCompleteStateChange;
         private void OnMouseUp()
         {
             SetCellState(!(GetCellState()));
         }
-
 
         public bool GetCellState()
         {
@@ -49,14 +33,14 @@ namespace EventBAsedAlternative.Runtime
         {
             Vector2[] neighborOffsets = new Vector2[]
             {
-            new Vector2(-1, 1),  // Haut-gauche
-            new Vector2(0, 1),   // Haut
-            new Vector2(1, 1),   // Haut-droit
-            new Vector2(-1, 0),  // Gauche
-            new Vector2(1, 0),   // Droite
-            new Vector2(-1, -1), // Bas-gauche
-            new Vector2(0, -1),  // Bas
-            new Vector2(1, -1)   // Bas-droit
+                new Vector2(-1, 1),  // Haut-gauche
+                new Vector2(0, 1),   // Haut
+                new Vector2(1, 1),   // Haut-droit
+                new Vector2(-1, 0),  // Gauche
+                new Vector2(1, 0),   // Droite
+                new Vector2(-1, -1), // Bas-gauche
+                new Vector2(0, -1),  // Bas
+                new Vector2(1, -1)   // Bas-droit
             };
             Vector2 cellPosition = transform.position;
             int cellAliveAround = 0;
@@ -78,15 +62,19 @@ namespace EventBAsedAlternative.Runtime
             var aliveCellAround = CountAliveNeighbour();
             if (aliveCellAround == 3) return true;
             if (aliveCellAround == 2) return GetCellState();
-            if (aliveCellAround <= 1 || aliveCellAround >= 4) return false;
+            if (aliveCellAround < 2 || aliveCellAround > 3) return false;
             return GetCellState(); // ???
         }
         public void OnNewGeneration()
         {
-            SetCellState(NextState());
+            _nextState = NextState();
+            OnCompleteStateChange.Invoke();
+        }
+        public void OnDisplayGeneration()
+        {
+            SetCellState(_nextState);
         }
 
-        
     }
 }
 
